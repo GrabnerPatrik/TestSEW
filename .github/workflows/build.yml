@@ -13,15 +13,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up MSVC
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
 
-      - name: Build the program
-        run: |
-          cl /EHsc /Fe:program.exe main.cpp
+      - name: Restore dependencies
+        run: dotnet restore HelloWorld/HelloWorld.csproj
+
+      - name: Build the project
+        run: dotnet build HelloWorld/HelloWorld.csproj --configuration Release
+
+      - name: Publish the project
+        run: dotnet publish HelloWorld/HelloWorld.csproj --configuration Release --output ./output
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: program
-          path: program.exe
+          name: HelloWorld
+          path: ./output/
